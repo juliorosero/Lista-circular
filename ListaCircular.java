@@ -1,82 +1,221 @@
 package epn;
 
-import javax.swing.JOptionPane;
+import java.io.EOFException;
 
 public class ListaCircular {
-	private Nodo lc;
-	 public ListaCircular()
-	 {
-		 lc = null;
-	 }
-	 public ListaCircular insertar(String entrada)
-	 {
+	private Nodo inicio;
+    private Nodo fin;
+    int tamaño;
+    
+    
+    public void Lista(){
+        inicio = null;
+        fin = null;
+        tamaño = 0;
+    }
+    
+	  
 	
-		 Nodo nuevo;
 	
-		 nuevo = new Nodo(entrada);
+	public int getTamaño() {
+		return tamaño;
+	}
+
 	
-		 if (lc != null) // lista circular no vacía
-		 {
-			 nuevo.enlace = lc.enlace;
-			 lc.enlace = nuevo;
+
+	public boolean esVacia(){
+        return inicio == null;
 	
-		 }
-		 lc = nuevo; 		
-		 return this;
-	 }
+	}
+	
+	public void insertarAlInicio(String libro){
+	    Nodo nuevo = new Nodo();
+        nuevo.setLibro(libro);
+        if (esVacia()) {
+            inicio=  nuevo;
+            fin= nuevo;  
+            fin.setSiguiente(inicio);
+        } else{
+            nuevo.setSiguiente(inicio);
+            inicio= nuevo;
+            fin.setSiguiente(inicio);
+//            inicio.setSiguiente(fin);
+        }
+        tamaño++;
+		
+	}
+	
+	
+	public void insertarAlFinal(String libro){
+        Nodo nuevo= new Nodo();
+        nuevo.setLibro(libro);
+        if (esVacia()) {
+            inicio=  nuevo;
+            fin= nuevo;
+            fin.setSiguiente(inicio);
+        } else{
+            fin.setSiguiente(nuevo);
+            nuevo.setSiguiente(inicio);
+            fin = nuevo;
+            
+           
+        }
+        tamaño++;
+    }
+	
+	public void insertarPorPosicion(int posicion,  String libro){
+         if(posicion>= 0 && posicion<= tamaño){
+            Nodo nuevo= new Nodo(); 
+            nuevo.setLibro(libro); 
+            if(posicion == 0){
+                nuevo.setSiguiente(inicio);
+                inicio = nuevo;
+                fin.setSiguiente(inicio);
+            }
+            else{
+                  if(posicion == tamaño){
+                    
+                    fin.setSiguiente(nuevo);
+                    nuevo.setSiguiente(inicio);
+                    fin  =nuevo;     
+                }
+                else{
+                    Nodo aux = inicio;
+                    for (int i=0;  i <(posicion-1); i++) {
+                        aux =  aux.getSiguiente();
+                    }
+                    Nodo siguiente = aux.getSiguiente();
+                    aux.setSiguiente(nuevo);
+                    nuevo.setSiguiente(siguiente );
+                }
+            }
+           tamaño++;
+        }
+    }
+	
+	
+	public void imprimir(){
+        if (!esVacia()) {
+            Nodo aux = inicio;
+            int i = 0;
+            do{
+                 System.out.print(""+i + ".[ " + aux.getLibro() + " ]\n");
+                aux  = aux.getSiguiente();
+                i++;
+            }while(aux!=inicio);
+        }
+    }
+	
+	
+	
+	
+	
+	
+	 public String buscarPorPosicion(int posicion) throws Exception{
+	       if(posicion>=0 && posicion<tamaño){
+	            if (posicion == 0) {
+	                return inicio.getLibro();
+	            }else{
+	                Nodo aux = inicio; //Hace una copia de la lista
+	                for (int i = 0; i < posicion; i++) {
+	                    aux = aux.getSiguiente();
+	                }
+	                
+	                return aux.getLibro(); // regresa el valor del nodo
+	            }
+	        } else {
+//	            throw  new Exception("No existe ese libro, elija valores entre 0 y "+ tamaño);
+	            throw  new EOFException("No existe ese libro, elija valores entre 0 y "+ tamaño);
+	        }
+	    }
 	 
-	 public void imprimir()	 {
-	 	 Nodo p;
-	 	 if (lc != null)
-	 	 {
-	 		 p = lc.enlace; // siguiente nodo al de acceso
-	 		 do {
-	 			 System.out.println("\t" + p.dato);
-//	 			 JOptionPane.showMessageDialog(null, "\t"+ p.dato);
-	 			 p = p.enlace;
-	 		 }while (p != lc.enlace);
-	 	 }
-	 	 else
-	 		 System.out.println("\t Lista Circular vacía.");
-	 	 
-	 }
 	 
 	 
-	 public void eliminar(String entrada)
-	 {
-	 	 Nodo actual;
-	 	 boolean encontrado = false;
-	 	 //bucle de búsqueda
-	 	 actual = lc;
-	 	 while ((actual.enlace != lc) && (!encontrado))
-	 	 {
-//	 		 encontrado = (actual.enlace.dato == entrada);
-	 		 encontrado = (actual.enlace.dato.equals(entrada));
-	 		 
-	 		 if (!encontrado)
-	 		 {
-	 			 actual = actual.enlace;
-	 		 }
-	 	 }
-	 	 encontrado = (actual.enlace.dato.equals(entrada));
-	 	 // Enlace de nodo anterior con el siguiente
-	 	 if (encontrado)
-	 	 {
-	 		 Nodo p;
-	 		 p = actual.enlace;		 // Nodo a eliminar
-	 		 if (lc == lc.enlace)	 // Lista con un solo nodo
-	 			 lc = null;
-	 		 else
-	 		 {
-	 			 if (p == lc)
-	 			 {
-	 				 lc = actual;	 // Se borra el elemento referenciado por lc,
-	 									 // el nuevo acceso a la lista es el anterior
-	 			 }
-	 			 actual.enlace = p.enlace;
-	 		 }
-	 		 p = null;
-	 	 }
-	 }
+	 
+	 public String buscarPorPosicion2(int posicion) throws Exception{
+	       if(posicion>=0 && posicion<tamaño){
+	            if (posicion == 0) {
+	                return inicio.getLibro();
+	            }
+	         
+	            else{
+	                Nodo aux = inicio; //Hace una copia de la lista
+	                for (int i = 0; i < posicion; i++) {
+	                    aux = aux.getSiguiente();
+	                }
+	                
+	                return aux.getLibro(); // regresa el valor del nodo
+	            }
+	        } else {
+//	            throw  new Exception("No existe ese libro, elija valores entre 0 y "+ tamaño);
+	            throw  new EOFException("No existe ese libro, elija valores entre 0 y "+ tamaño);
+	        }
+	    }
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 public boolean buscar(String buscar){
+	       Nodo aux = inicio;
+	        boolean encontrado = false;
+	        do{// busca en la lista hasta regresar al principio
+	           if (buscar.equals(aux.getLibro())){
+	                  encontrado=  true;
+	            }
+	            else{aux =  aux.getSiguiente();
+	            }
+	        }while(aux!=  inicio &&  encontrado!= true);
+	        return encontrado;
+	        
+	    }
+	 
+	 
+	 
+	 
+	 public int buscarPorNombre(String pBuscar) throws Exception{
+	        if (buscar(pBuscar)) {
+	            Nodo aux = inicio;
+	            int contador = 0; //almacena la posicion del nodo
+	            while(!pBuscar.equals(aux.getLibro())){
+	                contador++;
+	                aux =  aux.getSiguiente();
+	            }
+	            return contador;
+	        } else {
+	            throw new Exception("No existe el libro "+ pBuscar);
+	        }
+	    }
+	 
+	 
+	 public void eliminarPosicion(int posicion){
+	       if(posicion>=0 && posicion<tamaño){
+	           if(posicion==0){
+	                inicio = inicio.getSiguiente();  //elimina el primer nodo apuntando al siguiente
+	                fin.setSiguiente(inicio);
+	            }
+	           else{
+	               Nodo aux = inicio;
+	               for (int i = 0; i < posicion-1; i++) {
+	                    aux= aux.getSiguiente();  
+	                }
+	                if (aux.getSiguiente()==fin) {
+	                    aux.setSiguiente(inicio);
+	                    fin = aux;
+	                } else {
+	                    Nodo siguiente =  aux.getSiguiente();
+	                    aux.setSiguiente(siguiente.getSiguiente());  
+	                    }
+	            }
+	           tamaño--;
+	        }
+	    }
+
+
+
+	
 
 }
